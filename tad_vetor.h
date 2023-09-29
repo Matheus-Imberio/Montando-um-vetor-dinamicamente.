@@ -5,7 +5,15 @@ typedef struct vetor {
 	int qtde;
 	int tam;
 } Vetor;
-
+ void verificaeaumenta(Vetor*v){
+       v->tam*=2;
+       int* aux = (int*) calloc(v->tam,sizeof(int));
+        for(int i = 0; i < v->qtde; i++){
+             aux[i] = v->array[i];
+        }
+        free(v->array);
+        v->array = aux;
+ }
 Vetor* vet_criar(){
  Vetor* v = (Vetor*) malloc(sizeof(Vetor));
     v->qtde = 0;
@@ -14,12 +22,15 @@ Vetor* vet_criar(){
       return v;
 }
 
-void vet_desalocar(Vetor* endVetor){
+void vet_desalocar(Vetor** endVetor){
    free(endVetor);
     endVetor = NULL;
 }   
 bool vet_anexar(Vetor* v, int elemento){
 if(v == NULL)return false;
+   if(v->qtde == v->tam){
+    verificaeaumenta(v);
+   }
     v->array[v->qtde] = elemento;
     if(v->qtde == v->tam){
         v->tam++;
@@ -29,17 +40,20 @@ if(v == NULL)return false;
 }
 bool vet_inserir(Vetor* v, int elemento, int posicao){
    if(posicao > v->tam) return false;
+     if(v->qtde == v->tam){
+      verificaeaumenta(v);
+     }
      v->array[posicao-1] = elemento;
      v->qtde++;
        return true;
 }
 bool vet_substituir(Vetor* v, int posicao, int novoElemento){
-    if(posicao > v->tam) return false;
+    if(posicao > v->qtde) return false;
      v->array[posicao] = novoElemento;
        return true;
 }
 bool vet_removerPosicao(Vetor* v, int posicao, int* endereco){
-    if(posicao > v->tam) return false;
+    if(posicao > v->qtde) return false;
        endereco = &(v->array[posicao]);
         for(int i = posicao; i < v->qtde;i++){
               v->array[i] = v->array[i+1];
@@ -65,7 +79,7 @@ int vet_tamanho(Vetor* v){
     return v->qtde;  
 }
 bool vet_elemento(Vetor* v, int posicao, int* saida){
-   if(posicao > v->tam) return false;
+   if(posicao > v->qtde) return false;
       for(int i = 0; i < v-> qtde; i++){
         if(i == posicao ){
            *saida = v->array[i];
@@ -82,12 +96,15 @@ int vet_posicao(Vetor* v, int elemento){
      return -1;
 }
 void vet_imprimir(Vetor* v){
+  printf("[");
   for(int i = 0; i < v->qtde; i++){
       printf("%d", v->array[i]);
        if(i < v->qtde-1){
         printf(",");
        }
   }
+  printf("]");
+
 }
 bool vet_toString(Vetor* v, char* enderecoString){
   if(v == NULL)return false;
@@ -105,3 +122,4 @@ bool vet_toString(Vetor* v, char* enderecoString){
       strcpy(enderecoString,str);
       return true;
 }
+
